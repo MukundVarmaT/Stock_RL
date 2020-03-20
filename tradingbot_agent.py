@@ -15,10 +15,10 @@ def huber_loss(y_true, y_pred, clip_delta = 1.0):  # https://en.wikipedia.org/wi
 # Stock trading bot
 
 class Agent:
-    def __init__(self, state_size, strategy="t-dqn", reset_every=1000, pretrained=False, model_name=None):
+    def __init__(self, state_size, strategy="t-dqn", model_name=None, test = False,model_path=None):
         self.strategy = strategy
         self.state_size = state_size # no of previous days
-        self.action_size = 3 # [sit, buy, sell]
+        self.action_size = 3 # [hold, buy, sell]
         self.inventory = []
         self.memory = deque(maxlen=1000)
         self.first_iter = True
@@ -31,20 +31,12 @@ class Agent:
         self.epsilon_decay = 0.995
         self.learning_rate = 0.001
         self.loss = huber_loss
-        self.custom_objects = {"huber_loss":huber_loss} # whenever we load the model
         self.optimizer = keras.optimizers.Adam(lr=self.learning_rate)
-        
-        if pretrained and self.model_name is not None:
-            self.model = self.load()
-        else:
+        if test == False:
             self.model = self._model()
-        
-        if self.strategy in ["t-dqn","double-dqn"]:
-            self.n_iter = 1
-            self.reset_every = reset_every
-            self.target_model = keras.models.clone_model(self.model)
-            self.target_model.set_weights(self.model.get_weights())
-            
+        else:
+            self.custom_objects = {"huber_loss": huber_loss}
+            self.model = self.load(model_path)
     def _model(self):
         """
         creating the model
@@ -63,9 +55,6 @@ class Agent:
         
         model.compile(loss=self.loss, optimizer=self.optimizer)
         return model
-
-    def load(self):
-        return keras.models.load_model("models/"+self.model_name, custom_objects=self.custom_objects)
 
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
@@ -98,40 +87,8 @@ class Agent:
                 q_values[0][action] = target
                 
                 x_train.append(state[0])
-                y_train.append(q_values[0])        
-        
-        # DQN with fixed targets
-        elif self.strategy == "t-dqn":
-            if self.n_iter % self.reset_every == 0:
-                # reset target model weights.
-                self.target_model.set_weights(self.model.get_weights())
-            
-            for state, action, reward, next_state, done in mini_batch:
-                if done:
-                    target = reward
-                else:
-                    target = reward + self.gamma*np.amax(self.model.predict(next_state)[0])
-                
-                q_values = self.model.predict(state)
-                q_values[0][action] = target
-                x_train.append(state[0])
                 y_train.append(q_values[0])
-        
-        elif self.strategy == "double-dqn":
-            if self.n_iter % self.reset_every == 0:
-                self.target_model.set_weights(self.model.get_weights())
-            
-            for state, action, reward, next_state, done in mini_batch:
-                if done:
-                    target = reward
-                else:
-                    target = reward + self.gamma* self.target_model.predict(next_state)[0][np.argmax(self.model.predict(next_state)[0])]
                 
-                q_values = self.model.predict(state)
-                q_values[0][action] = target
-                
-                x_train.append(state[0])
-                y_train.append(q_values[0])
         else:
             raise NotImplementedError()
     
@@ -144,5 +101,7 @@ class Agent:
     
     def save(self, episode):
         self.model.save("models/{}_{}".format(self.model_name, episode))
-
+    
+    def load(self, model_path):
+        return keras.models.load_model(model_path,custom_objects=self.custom_objects)
         

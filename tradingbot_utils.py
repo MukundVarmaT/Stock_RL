@@ -16,12 +16,6 @@ def show_train_result(result, val_position, initial_offset):
         logging.info('Episode {}/{} - Train Position: {}  Val Position: {}  Train Loss: {:.4f})'
                      .format(result[0], result[1], format_position(result[2]), format_position(val_position), result[3],))
     
-def show_eval_result(model_name, profit, initial_offset):
-    if profit == initial_offset or profit == 0.0:
-        logging.info('{}: USELESS\n'.format(model_name))
-    else:
-        logging.info('{}: {}\n'.format(model_name, format_position(profit)))
-        
 def get_stock_data(stock_file):
     df = pd.read_csv(stock_file)
     return list(df['Adj Close'])
