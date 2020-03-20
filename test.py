@@ -22,7 +22,7 @@ X = deque(maxlen=20)
 X.append(dates[0])
 Y = deque(maxlen=20)
 Y.append(0)
-i = 200
+i = 1
 
 app = dash.Dash(__name__)
 app.layout = html.Div(
@@ -67,7 +67,7 @@ def update_value(input_data):
     if i >= len(history):
         return "Total profit is: ",history[len(history)-1][2]
     else:
-        return 'Bot is going to {} and total profit right now is {:.2f}'.format(history[i-1][1], history[i-1][2])
+        return 'Bot is going to {} and total profit right now is ${:.2f}'.format(history[i-1][1], history[i-1][2])
     
 @app.callback(Output("output","style"),
               [Input('graph-update', 'n_intervals')])
