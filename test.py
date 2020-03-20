@@ -12,9 +12,14 @@ import random
 import plotly.graph_objs as go
 from collections import deque
 import time
+import pandas as pd
+
+
+test_stock = "test_GOOG_2019.csv"
+dates = pd.read_csv(test_stock)["Date"].values
 
 X = deque(maxlen=20)
-X.append(0)
+X.append(dates[0])
 Y = deque(maxlen=20)
 Y.append(0)
 i = 1
@@ -46,7 +51,7 @@ def update_graph_scatter(input_data):
                                                     yaxis=dict(range=[0,max([x[0] for x in history])]),)}
         
     else:
-        X.append(i)
+        X.append(dates[i])
         Y.append(history[i-1][0])
         # print(history[i][0])
         data = plotly.graph_objs.Scatter(x=list(X),y=list(Y),name='Scatter',mode= 'lines+markers')
@@ -62,7 +67,7 @@ def update_value(input_data):
     if i >= len(history):
         return "Total profit is: ",history[len(history)-1][2]
     else:
-        return 'Bot is going to {} and total profit right now is {}'.format(history[i-1][1], history[i-1][2])
+        return 'Bot is going to {} and total profit right now is {:.2f}'.format(history[i-1][1], history[i-1][2])
     
 @app.callback(Output("output","style"),
               [Input('graph-update', 'n_intervals')])
@@ -90,9 +95,11 @@ def main(test_stock, window_size, strategy, model_path, debug=False):
 
 if __name__ == '__main__':
     test_stock = "test_GOOG_2019.csv"
+    # dates = pd.read_csv(test_stock)["Date"].values
+    # print(dates)
     strategy = "dqn"
     window_size = 10
-    model_path = "models/dqn_40"
+    model_path = "models/dqn_100"
     debug = False
     
     coloredlogs.install(level="DEBUG")
