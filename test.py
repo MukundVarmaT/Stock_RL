@@ -22,7 +22,7 @@ X = deque(maxlen=20)
 X.append(dates[0])
 Y = deque(maxlen=20)
 Y.append(0)
-i = 1
+i = 200
 
 app = dash.Dash(__name__)
 app.layout = html.Div(
@@ -44,10 +44,10 @@ def update_graph_scatter(input_data):
     if i>len(history):
         raise dash.exceptions.PreventUpdate
     elif i == len(history):
-        data = plotly.graph_objs.Scatter(x=[i for i in range(len(history))],y=[x[0] for x in history],name='Scatter',mode= 'lines+markers')
+        data = plotly.graph_objs.Scatter(x=[x for x in dates],y=[x[0] for x in history],name='Scatter',mode= 'lines+markers')
         # print(data)
         i = i+1
-        return {'data': [data],'layout' : go.Layout(xaxis=dict(range=[0,len(history)]),
+        return {'data': [data],'layout' : go.Layout(xaxis=dict(range=[min(dates),max(dates)]),
                                                     yaxis=dict(range=[0,max([x[0] for x in history])]),)}
         
     else:
