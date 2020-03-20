@@ -10,7 +10,7 @@ The model was able to get a profit of almost **$2500** for the year 2019. Now th
 
 I have also created a **dash application** to see the decisions made by the bot at a particular time and the total profit earned till then. A speeded up video of the same.
 
-![dash](stock-DQN.gif)
+![dash](images/stock-DQN.gif)
 
 
 ## Model-specific details:
