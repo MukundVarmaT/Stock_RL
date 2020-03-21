@@ -33,7 +33,12 @@ def train_model(agent, episode, data, ep_count=100, batch_size=32, window_size=1
         
         # hold
         else:
-            pass
+            if len(agent.inventory) == 0:
+                reward = data[t] - data[t+1]
+            else:
+                bought_price = agent.inventory[0]
+                delta = bought_price - data[t]
+                reward = delta
         
         done = (t == data_length - 1)
         agent.remember(state,action, reward, next_state, done)
