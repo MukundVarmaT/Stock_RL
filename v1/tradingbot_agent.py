@@ -24,7 +24,7 @@ class Agent:
         self.first_iter = True
         
         # model params
-        self. model_name = model_name
+        self.model_name = model_name
         self.gamma = 0.95
         self.epsilon = 1.0
         self.epsilon_min = 0.01

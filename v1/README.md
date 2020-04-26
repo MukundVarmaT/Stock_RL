@@ -39,6 +39,7 @@ Currently the model achieves a higher profit more than **$3450** in the year 201
 - [x] Change the reward policy.
 - [ ] Double DQN
 - [ ] Dueling DQN
+- [ ] PER (with sumtree)
 - [ ] Ability of the bot to purchase multiple quantity of stocks.
 - [ ] Ability of the bot to choose from different stock options.
 
